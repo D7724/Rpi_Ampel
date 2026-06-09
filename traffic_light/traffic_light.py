@@ -3,7 +3,7 @@ from utime import sleep
 
 class Red:
     def change(self, traffic_light):
-        traffic_light.zustand = Yellow()
+        traffic_light.current_state = Yellow()
 
     def show(self, traffic_light):
         traffic_light.red.on()
@@ -12,7 +12,7 @@ class Red:
 class Green:
     def change(self, traffic_light):
         traffic_light.green.off()
-        traffic_light.zustand = Yellow()
+        traffic_light.current_state = Yellow()
 
     def show(self, traffic_light):
         traffic_light.green.on()
@@ -23,9 +23,9 @@ class Yellow:
         traffic_light.yellow.off()
         traffic_light.red.off()
         if isinstance(traffic_light.previous_state, Red):
-            traffic_light.zustand = Green()
+            traffic_light.current_state = Green()
         else:
-            traffic_light.zustand = Red()
+            traffic_light.current_state = Red()
 
     def show(self, traffic_light):
         traffic_light.yellow.on()
@@ -39,13 +39,15 @@ class TrafficLight:
         self.red.off()
         self.yellow.off()
         self.green.off()
-        self.zustand = Red()
+        self.current_state = Red()
+        self.current_state.show(self)
+        self.previous_state = None
 
     def change(self):
-        if not isinstance(self.zustand, Yellow):
-            self.previous_state = self.zustand
-        self.zustand.change(self)
-        self.zustand.show(self)
+        if not isinstance(self.current_state, Yellow):
+            self.previous_state = self.current_state
+        self.current_state.change(self)
+        self.current_state.show(self)
 
 
 def main():
@@ -57,4 +59,5 @@ def main():
         traffic_light2.change()
         sleep(1)
 
-main()
+if __name__ == "__main__":
+    main()

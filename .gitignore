@@ -1,0 +1,3 @@
+.coverage
+traffic_light/.pytest_cache/*
+traffic_light/__pycache__/*
