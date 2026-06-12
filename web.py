@@ -20,6 +20,9 @@ ROUTES = {
     "GET /fussgaenger ": (EventType.PEDESTRIAN, "🚶 Fußgänger hat geklickt!"),
 }
 
+PEDESTRIAN_MAX_GREEN_SEC = 15
+LOOP_TIMEOUT_SEC = 1
+
 # ==========================================
 # Hardware
 # ==========================================
@@ -120,6 +123,26 @@ def send_html(client):
 
 
 # ==========================================
+# Light switching logic
+# ==========================================
+pedestrian_green_since = None
+
+def switch_to(event_type, event_manager):
+    global pedestrian_green_since
+
+    if event_manager.lastEventType == event_type:
+        return  
+    event_manager.notify(event_manager.lastEventType)
+    event_manager.notify(event_type)
+    event_manager.lastEventType = event_type
+
+    if event_type == EventType.PEDESTRIAN:
+        pedestrian_green_since = time.time()
+    else:
+        pedestrian_green_since = None
+
+
+# ==========================================
 # Request Handler
 # ==========================================
 def handle_request(request, event_manager):
@@ -128,14 +151,20 @@ def handle_request(request, event_manager):
     for route, (event_type, message) in ROUTES.items():
         if route in first_line:
             print(message)
-            if event_manager.lastEventType != event_type:
-                event_manager.notify(event_manager.lastEventType)  # currently green → red, first
-                event_manager.notify(event_type)                   # the other one → green, second
-                event_manager.lastEventType = event_type
+            switch_to(event_type, event_manager)
             return
 
     print("Unknown request:", first_line)
 
+
+def check_pedestrian_timeout(event_manager):
+    if (
+        event_manager.lastEventType == EventType.PEDESTRIAN
+        and pedestrian_green_since is not None
+        and (time.time() - pedestrian_green_since) >= PEDESTRIAN_MAX_GREEN_SEC
+    ):
+        print("⏱️ Fussgänger-Grünphase abgelaufen, wechsle zu Autos")
+        switch_to(EventType.CAR, event_manager)
 
 # ==========================================
 # Main
@@ -148,6 +177,8 @@ server = socket.socket()
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind(addr)
 server.listen(5)
+server.settimeout(LOOP_TIMEOUT_SEC)
+pedestrian_green_since = None
 
 print("Listening on", addr)
 
@@ -168,6 +199,9 @@ while True:
 
         send_html(client)
 
+    except OSError:
+        pass
+
     except Exception as e:
         print("Error:", e)
 
@@ -176,3 +210,5 @@ while True:
             client.close()
 
         led.off()
+
+    check_pedestrian_timeout(manager)
