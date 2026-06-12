@@ -105,7 +105,10 @@ def switch_traffic_to(event_type, event_manager):
     
     if event_manager.last_event_type == event_type:
         return
-    
+    if (last_pedestrian_green_time is not None
+        and (time.time() - last_pedestrian_green_time) < PEDESTRIAN_MAX_GREEN_SECONDS):
+        return   
+
     event_manager.notify(event_manager.last_event_type)
     event_manager.notify(event_type)
     event_manager.last_event_type = event_type
