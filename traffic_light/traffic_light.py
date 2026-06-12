@@ -1,7 +1,7 @@
 from observer.event_manager import EventManager, EventListener, EventType
 from time import sleep
 
-CYCLE_STEPS = 4
+CYCLE_STEPS = 2
 CHANGE_INTERVAL_SEC = 1
 
 
@@ -44,7 +44,6 @@ class TrafficLight(EventListener):
         self.green.off()
         self.current_state = initial_state
         initial_state.show(self)
-        self.current_state.show(self)
         self.previous_state = None
 
     def change(self):
@@ -57,4 +56,3 @@ class TrafficLight(EventListener):
         for _ in range(CYCLE_STEPS):
             self.change()
             sleep(CHANGE_INTERVAL_SEC)
-

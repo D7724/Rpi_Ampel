@@ -15,6 +15,10 @@ manager.subscribe(EventType.PEDESTRIAN, traffic_light2)
 # ==========================================
 SSID = "Rpi_Ampel"
 PASSWORD = "12345678"
+ROUTES = {
+    "GET /auto ": (EventType.CAR, "🚗 Auto hat geklickt!"),
+    "GET /fussgaenger ": (EventType.PEDESTRIAN, "🚶 Fußgänger hat geklickt!"),
+}
 
 # ==========================================
 # Hardware
@@ -121,16 +125,16 @@ def send_html(client):
 def handle_request(request, event_manager):
     first_line = request.split("\r\n")[0]
 
-    if "GET /auto " in first_line:
-        print("🚗 Auto hat geklickt!")
-        event_manager.notify(EventType.CAR)   
+    for route, (event_type, message) in ROUTES.items():
+        if route in first_line:
+            print(message)
+            if event_manager.lastEventType != event_type:
+                event_manager.notify(event_manager.lastEventType)  # currently green → red, first
+                event_manager.notify(event_type)                   # the other one → green, second
+                event_manager.lastEventType = event_type
+            return
 
-    elif "GET /fussgaenger " in first_line:
-        print("🚶 Fußgänger hat geklickt!")
-        event_manager.notify(EventType.PEDESTRIAN)
-
-    else:
-        print("Unknown request:", first_line)
+    print("Unknown request:", first_line)
 
 
 # ==========================================

@@ -9,14 +9,12 @@ class EventListener:
 
 
 class EventManager:
-    _instance: "EventManager | None" = None
+    lastEventType: int
     listeners: dict 
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.listeners = {}
-        return cls._instance
+    def __init__(self):
+        self.lastEventType = EventType.CAR
+        self.listeners = {}
 
     def subscribe(self, event_type, listener):
         if event_type not in self.listeners:
