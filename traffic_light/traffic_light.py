@@ -2,7 +2,7 @@ from observer.event_manager import EventManager, EventListener, EventType
 from time import sleep
 
 CYCLE_STEPS = 2
-CHANGE_INTERVAL_SEC = 1
+CHANGE_INTERVAL_SECONDS = 1
 
 
 class Red:
@@ -34,11 +34,12 @@ class Yellow:
     def show(self, traffic_light):
         traffic_light.yellow.on()
 
+
 class TrafficLight(EventListener):
     def __init__(self, red_pin, yellow_pin, green_pin, pin, initial_state):
-        self.red = pin(red_pin, pin.OUT) 
-        self.yellow = pin(yellow_pin, pin.OUT) 
-        self.green = pin(green_pin, pin.OUT) 
+        self.red = pin(red_pin, pin.OUT)
+        self.yellow = pin(yellow_pin, pin.OUT)
+        self.green = pin(green_pin, pin.OUT)
         self.red.off()
         self.yellow.off()
         self.green.off()
@@ -55,4 +56,4 @@ class TrafficLight(EventListener):
     def update(self, event_type):
         for _ in range(CYCLE_STEPS):
             self.change()
-            sleep(CHANGE_INTERVAL_SEC)
+            sleep(CHANGE_INTERVAL_SECONDS)

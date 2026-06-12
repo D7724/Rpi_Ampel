@@ -9,11 +9,8 @@ class EventListener:
 
 
 class EventManager:
-    lastEventType: int
-    listeners: dict 
-
     def __init__(self):
-        self.lastEventType = EventType.CAR
+        self.last_event_type = EventType.CAR
         self.listeners = {}
 
     def subscribe(self, event_type, listener):
