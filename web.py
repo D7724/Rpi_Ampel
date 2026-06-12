@@ -1,8 +1,15 @@
 import socket
 import network
-import machine
 import time
+import machine
+from observer.event_manager import EventManager, EventType
+from traffic_light.traffic_light import Green, Red, TrafficLight
 
+manager = EventManager()
+traffic_light1 = TrafficLight(6, 7, 8, machine.Pin, Green())
+traffic_light2 = TrafficLight(18, 19, 20, machine.Pin, Red())
+manager.subscribe(EventType.CAR, traffic_light1)
+manager.subscribe(EventType.PEDESTRIAN, traffic_light2)
 # ==========================================
 # Configuration
 # ==========================================
@@ -111,20 +118,16 @@ def send_html(client):
 # ==========================================
 # Request Handler
 # ==========================================
-def handle_request(request):
+def handle_request(request, event_manager):
     first_line = request.split("\r\n")[0]
 
     if "GET /auto " in first_line:
         print("🚗 Auto hat geklickt!")
-
-        # TODO:
-        # Ampellogik für Autos
+        event_manager.notify(EventType.CAR)   
 
     elif "GET /fussgaenger " in first_line:
         print("🚶 Fußgänger hat geklickt!")
-
-        # TODO:
-        # Ampellogik für Fußgänger
+        event_manager.notify(EventType.PEDESTRIAN)
 
     else:
         print("Unknown request:", first_line)
@@ -157,7 +160,7 @@ while True:
 
         request = client.recv(1024).decode("utf-8")
 
-        handle_request(request)
+        handle_request(request, manager)
 
         send_html(client)
 

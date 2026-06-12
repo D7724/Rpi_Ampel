@@ -23,14 +23,14 @@ class MockPin:
 
 def test_initial_state():
     #arrange
-    testee = TrafficLight(6, 7, 8, MockPin)
+    testee = TrafficLight(6, 7, 8, MockPin, Red())
     #act
     #assert
     assert isinstance(testee.current_state, Red)
 
 def test_previous_state():
     #arrange
-    testee = TrafficLight(6, 7, 8, MockPin)
+    testee = TrafficLight(6, 7, 8, MockPin, Red())
     #act
     testee.change()
     #assert
@@ -38,7 +38,7 @@ def test_previous_state():
 
 def test_state_yellow():
     #arrange
-    testee = TrafficLight(6, 7, 8, MockPin)
+    testee = TrafficLight(6, 7, 8, MockPin, Red())
     #act
     testee.change()
     #assert
@@ -46,7 +46,7 @@ def test_state_yellow():
 
 def test_state_green():
     #arrange
-    testee = TrafficLight(6, 7, 8, MockPin)
+    testee = TrafficLight(6, 7, 8, MockPin, Red())
     #act
     testee.change()
     testee.change()
@@ -55,7 +55,7 @@ def test_state_green():
 
 def test_show_red_and_yellow():
     #arrange
-    testee = TrafficLight(6, 7, 8, MockPin)
+    testee = TrafficLight(6, 7, 8, MockPin, Red())
     #act
     testee.change()
     #assert
@@ -67,7 +67,7 @@ def test_show_red_and_yellow():
 
 def test_show_green():
     #arrange
-    testee = TrafficLight(6, 7, 8, MockPin)
+    testee = TrafficLight(6, 7, 8, MockPin, Red())
     #act
     testee.change()
     testee.change()
@@ -78,7 +78,7 @@ def test_show_green():
 
 def test_show_only_yellow():
     #arrange
-    testee = TrafficLight(6, 7, 8, MockPin)
+    testee = TrafficLight(6, 7, 8, MockPin, Red())
     #act
     testee.change()
     testee.change()

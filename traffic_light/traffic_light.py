@@ -1,5 +1,9 @@
-from machine import Pin
-from utime import sleep
+from observer.event_manager import EventManager, EventListener, EventType
+from time import sleep
+
+CYCLE_STEPS = 4
+CHANGE_INTERVAL_SEC = 1
+
 
 class Red:
     def change(self, traffic_light):
@@ -30,16 +34,16 @@ class Yellow:
     def show(self, traffic_light):
         traffic_light.yellow.on()
 
-
-class TrafficLight:
-    def __init__(self, red_pin, yellow_pin, green_pin, pin):
+class TrafficLight(EventListener):
+    def __init__(self, red_pin, yellow_pin, green_pin, pin, initial_state):
         self.red = pin(red_pin, pin.OUT) 
         self.yellow = pin(yellow_pin, pin.OUT) 
         self.green = pin(green_pin, pin.OUT) 
         self.red.off()
         self.yellow.off()
         self.green.off()
-        self.current_state = Red()
+        self.current_state = initial_state
+        initial_state.show(self)
         self.current_state.show(self)
         self.previous_state = None
 
@@ -49,15 +53,8 @@ class TrafficLight:
         self.current_state.change(self)
         self.current_state.show(self)
 
+    def update(self, event_type):
+        for _ in range(CYCLE_STEPS):
+            self.change()
+            sleep(CHANGE_INTERVAL_SEC)
 
-def main():
-    traffic_light1 = TrafficLight(6, 7, 8, Pin)
-    traffic_light2 = TrafficLight(18,19,20, Pin)
-    traffic_light1.change()
-    while True:
-        traffic_light1.change()
-        traffic_light2.change()
-        sleep(1)
-
-if __name__ == "__main__":
-    main()

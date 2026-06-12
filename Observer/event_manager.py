@@ -1,0 +1,34 @@
+class EventType:
+    PEDESTRIAN = 1
+    CAR = 2
+
+
+class EventListener:
+    def update(self, event_type):
+        pass
+
+
+class EventManager:
+    _instance: "EventManager | None" = None
+    listeners: dict 
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.listeners = {}
+        return cls._instance
+
+    def subscribe(self, event_type, listener):
+        if event_type not in self.listeners:
+            self.listeners[event_type] = []
+        self.listeners[event_type].append(listener)
+
+    def unsubscribe(self, event_type, listener):
+        if event_type in self.listeners:
+            if listener in self.listeners[event_type]:
+                self.listeners[event_type].remove(listener)
+
+    def notify(self, event_type):
+        if event_type in self.listeners:
+            for listener in self.listeners[event_type]:
+                listener.update(event_type)
